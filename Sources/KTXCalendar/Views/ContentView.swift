@@ -223,86 +223,132 @@ struct KTXEventRow: View {
     }()
     private static let dateFmt: DateFormatter = {
         let f = DateFormatter()
-        f.dateFormat = "d일 (E)"
+        f.dateFormat = "M.d"
+        f.locale = Locale(identifier: "ko_KR")
+        return f
+    }()
+    private static let dayFmt: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "E"
         f.locale = Locale(identifier: "ko_KR")
         return f
     }()
 
     /// 이벤트 제목에서 열차 정보 파싱 "KTX-산천 195 | 행신→동대구"
+    /// \r 등 제어문자 방어: 기존에 저장된 이벤트 제목에도 대응
     private var titleParts: (trainInfo: String, route: String) {
-        let title = event.title ?? ""
+        let title = (event.title ?? "")
+            .replacingOccurrences(of: "\r\n", with: "")
+            .replacingOccurrences(of: "\r", with: "")
+            .replacingOccurrences(of: "\n", with: "")
         let parts = title.components(separatedBy: " | ")
         return (parts.first ?? title, parts.last ?? "")
     }
 
+    /// 경로 문자열에서 출발역/도착역 분리 "행신→동대구" → ("행신", "동대구")
+    private var routeParts: (dep: String, arr: String) {
+        let parts = titleParts.route.components(separatedBy: "→")
+        if parts.count == 2 {
+            return (parts[0].trimmingCharacters(in: .whitespaces),
+                    parts[1].trimmingCharacters(in: .whitespaces))
+        }
+        return (titleParts.route, "")
+    }
+
     var body: some View {
-        HStack(spacing: 12) {
-            // 날짜 뱃지
+        HStack(alignment: .center, spacing: 0) {
+
+            // ── 왼쪽 컬러 바 ─────────────────────────────
+            RoundedRectangle(cornerRadius: 2)
+                .fill(isPast ? Color(.systemGray4) : Color.blue)
+                .frame(width: 4)
+                .padding(.vertical, 2)
+
+            // ── 날짜 뱃지 (고정 너비) ─────────────────────
             VStack(spacing: 2) {
                 Text(Self.dateFmt.string(from: event.startDate))
-                    .font(.caption2).bold()
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
                     .foregroundColor(isPast ? .secondary : .blue)
-                    .multilineTextAlignment(.center)
-
-                if isPast {
-                    Text("완료")
-                        .font(.caption2)
-                        .padding(.horizontal, 4).padding(.vertical, 1)
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(4)
-                        .foregroundColor(.secondary)
-                } else {
-                    Text("예정")
-                        .font(.caption2)
-                        .padding(.horizontal, 4).padding(.vertical, 1)
-                        .background(Color.blue.opacity(0.15))
-                        .cornerRadius(4)
-                        .foregroundColor(.blue)
-                }
+                Text(Self.dayFmt.string(from: event.startDate))
+                    .font(.system(size: 10, weight: .regular))
+                    .foregroundColor(.secondary)
+                Text(isPast ? "완료" : "예정")
+                    .font(.system(size: 9, weight: .semibold))
+                    .padding(.horizontal, 5).padding(.vertical, 2)
+                    .background(isPast ? Color(.systemGray5) : Color.blue.opacity(0.12))
+                    .clipShape(Capsule())
+                    .foregroundColor(isPast ? .secondary : .blue)
             }
-            .frame(width: 52)
+            .frame(width: 46)
+            .padding(.leading, 8)
 
-            Divider().frame(height: 44)
+            // ── 구분선 ────────────────────────────────────
+            Rectangle()
+                .fill(Color(.separator).opacity(0.5))
+                .frame(width: 0.5, height: 50)
+                .padding(.horizontal, 10)
 
-            // 경로 + 시간
-            VStack(alignment: .leading, spacing: 4) {
-                Text(titleParts.trainInfo)
-                    .font(.subheadline).bold()
-                    .lineLimit(1)
-                    .foregroundColor(isPast ? .secondary : .primary)
+            // ── 메인 정보 ─────────────────────────────────
+            // 레이아웃 구조: 경로(좌) + 시간(우)가 1행, 편명이 2행
+            // → 편명이 아무리 길어도 시간 줄바꿈 절대 없음
+            VStack(alignment: .leading, spacing: 5) {
 
-                HStack(spacing: 4) {
-                    if !titleParts.route.isEmpty {
-                        Text(titleParts.route)
-                            .font(.caption)
+                // ① 1행: 출발역 → 도착역 (좌) | 시간 범위 (우, fixedSize)
+                HStack(alignment: .center, spacing: 0) {
+
+                    // 경로: 출발역 → 도착역
+                    HStack(spacing: 5) {
+                        Text(routeParts.dep)
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundColor(isPast ? .secondary : .primary)
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 10, weight: .semibold))
                             .foregroundColor(.secondary)
+                        Text(routeParts.arr)
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundColor(isPast ? .secondary : .primary)
                     }
-                    Text("·")
-                        .font(.caption).foregroundColor(.secondary)
-                    Text("\(Self.timeFmt.string(from: event.startDate)) 출발")
-                        .font(.caption).foregroundColor(.secondary)
-                    if let end = event.endDate {
-                        Text("→ \(Self.timeFmt.string(from: end))")
-                            .font(.caption).foregroundColor(.secondary)
+                    .lineLimit(1)
+
+                    Spacer(minLength: 8)
+
+                    // 시간: HH:mm → HH:mm  (.fixedSize로 절대 줄바꿈 방지)
+                    HStack(spacing: 3) {
+                        Text(Self.timeFmt.string(from: event.startDate))
+                            .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                            .foregroundColor(isPast ? .secondary : .primary)
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 8, weight: .medium))
+                            .foregroundColor(Color(.tertiaryLabel))
+                        if let end = event.endDate {
+                            Text(Self.timeFmt.string(from: end))
+                                .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                                .foregroundColor(isPast ? .secondary : .primary)
+                        }
                     }
+                    .fixedSize()   // ← 핵심: 시간은 절대 축소·줄바꿈하지 않음
                 }
+
+                // ② 2행: 열차 편명 (보조 정보)
+                Text(titleParts.trainInfo)
+                    .font(.caption)
+                    .foregroundColor(Color(.tertiaryLabel))
+                    .lineLimit(1)
             }
 
-            Spacer()
-
-            // 삭제 버튼
-            Button {
-                onCancel()
-            } label: {
+            // ── 삭제 버튼 ─────────────────────────────────
+            Button(action: onCancel) {
                 Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(isPast ? .secondary.opacity(0.5) : .red.opacity(0.7))
+                    .foregroundColor(isPast ? Color(.systemGray4) : Color.red.opacity(0.6))
                     .font(.title3)
             }
             .buttonStyle(.plain)
+            .padding(.leading, 10)
+            .padding(.trailing, 2)
         }
-        .padding(.vertical, 4)
-        .opacity(isPast ? 0.45 : 1.0)
-        .saturation(isPast ? 0.0 : 1.0)   // 과거 항목은 채도 제거 (흑백)
+        .padding(.vertical, 7)
+        .opacity(isPast ? 0.5 : 1.0)
+        .saturation(isPast ? 0.0 : 1.0)   // 과거 항목은 흑백
     }
 }
 

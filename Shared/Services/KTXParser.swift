@@ -158,7 +158,9 @@ class KTXParser {
     // MARK: - 헬퍼
 
     private func cleanStation(_ s: String) -> String {
-        s.trimmingCharacters(in: .whitespacesAndNewlines)
+        // \s 가 character class에 포함돼 \r·\n이 역명에 캡처될 수 있으므로
+        // 공백·줄바꿈 문자 전체를 제거(trim 아닌 filter로 중간 삽입도 방어)
+        s.filter { !$0.isWhitespace }
          .replacingOccurrences(of: "역", with: "")
     }
 
