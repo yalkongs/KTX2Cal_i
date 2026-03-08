@@ -1,0 +1,373 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		010AA13C6660792EB4A2AA06 /* KTXTicket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D26B36301D6C94F4CF6FFC8 /* KTXTicket.swift */; };
+		24DBF7A55F2E21F73E0A824F /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EF7D3A8EDA9C641411CE7FA /* ShareViewController.swift */; };
+		2910DAAC54A514A1CCF487E1 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7E240BE806284B66BE4853 /* CalendarService.swift */; };
+		29CA87CB730265091A04CABA /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7E240BE806284B66BE4853 /* CalendarService.swift */; };
+		38D97B7E8D555AF82D931D40 /* KTXCalendarShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 788564A34E0D89C23B5AB7AA /* KTXCalendarShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		38E548CA994869672698960A /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9304276FF7A58DE1BB96F6C5 /* OCRService.swift */; };
+		538759DEB5D61CBA04695AD6 /* KTXParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7530FD9BC9DEF314B714CF /* KTXParser.swift */; };
+		6C6B6EA868B2235323CF3404 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5060FA3105767FB88211D27 /* ContentView.swift */; };
+		8063B4F32FFCF9AACDF8C7D3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D7A8C793A036D361C88BAFA /* Assets.xcassets */; };
+		939E232AA84DC1A29BCF8371 /* TicketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDC51EAA7E4653CE0B29AC4 /* TicketStore.swift */; };
+		A3EBE32C9EB326BEFBDD79E7 /* KTXParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7530FD9BC9DEF314B714CF /* KTXParser.swift */; };
+		C09AA5BF0C41F2CC3FCEA1C4 /* KTXCalendarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B7BE58B6F7C550E29560E5 /* KTXCalendarApp.swift */; };
+		CE1F2765484A01D4CEE7984A /* ShareTicketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B2AD6E536C5EE530233B83 /* ShareTicketView.swift */; };
+		E3394616A0122F1CC0E308A2 /* OCRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9304276FF7A58DE1BB96F6C5 /* OCRService.swift */; };
+		EACC37927C5764762626EB0A /* KTXTicket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D26B36301D6C94F4CF6FFC8 /* KTXTicket.swift */; };
+		F98FF4A9AF61F9C79E5EC32B /* TicketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDC51EAA7E4653CE0B29AC4 /* TicketStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		60CFFC1650E06B4E96953DA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01E012496EBBF22384970A35 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B3919ADF603E3FCA167627FE;
+			remoteInfo = KTXCalendarShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0CF99A0CA0414438D3AABF89 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				38D97B7E8D555AF82D931D40 /* KTXCalendarShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		16B2AD6E536C5EE530233B83 /* ShareTicketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareTicketView.swift; sourceTree = "<group>"; };
+		3BDC51EAA7E4653CE0B29AC4 /* TicketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketStore.swift; sourceTree = "<group>"; };
+		3EF7D3A8EDA9C641411CE7FA /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		4D7E240BE806284B66BE4853 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		55B7BE58B6F7C550E29560E5 /* KTXCalendarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KTXCalendarApp.swift; sourceTree = "<group>"; };
+		5D7A8C793A036D361C88BAFA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6D26B36301D6C94F4CF6FFC8 /* KTXTicket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KTXTicket.swift; sourceTree = "<group>"; };
+		788564A34E0D89C23B5AB7AA /* KTXCalendarShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = KTXCalendarShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9304276FF7A58DE1BB96F6C5 /* OCRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCRService.swift; sourceTree = "<group>"; };
+		A5060FA3105767FB88211D27 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AE7530FD9BC9DEF314B714CF /* KTXParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KTXParser.swift; sourceTree = "<group>"; };
+		F7E9392CD7D91316BC7266E3 /* KTXCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KTXCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		A4C6DBFDCAC8A76E109B7782 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				55B7BE58B6F7C550E29560E5 /* KTXCalendarApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		B62698C867A84938D5A0B8CA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F7E9392CD7D91316BC7266E3 /* KTXCalendar.app */,
+				788564A34E0D89C23B5AB7AA /* KTXCalendarShareExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BA329F6FC694506E5A7B4C8B /* KTXCalendar */ = {
+			isa = PBXGroup;
+			children = (
+				5D7A8C793A036D361C88BAFA /* Assets.xcassets */,
+				A4C6DBFDCAC8A76E109B7782 /* App */,
+				D38068F87E4D16264180723A /* Views */,
+			);
+			path = KTXCalendar;
+			sourceTree = "<group>";
+		};
+		C4F8AE424B5B24AD62252C90 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F82B79F07ABBE835437D1D67 /* Models */,
+				E46DB426DC7BE4D43BEBC5D3 /* Services */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		CCD2E76CAC41052C92332FDF /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				16B2AD6E536C5EE530233B83 /* ShareTicketView.swift */,
+				3EF7D3A8EDA9C641411CE7FA /* ShareViewController.swift */,
+			);
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
+		CF203EFCCF7DFEC3475D8E5E = {
+			isa = PBXGroup;
+			children = (
+				C4F8AE424B5B24AD62252C90 /* Shared */,
+				E3C98AF8728E1E9E43438531 /* Sources */,
+				B62698C867A84938D5A0B8CA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D38068F87E4D16264180723A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A5060FA3105767FB88211D27 /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E3C98AF8728E1E9E43438531 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				BA329F6FC694506E5A7B4C8B /* KTXCalendar */,
+				CCD2E76CAC41052C92332FDF /* ShareExtension */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		E46DB426DC7BE4D43BEBC5D3 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				4D7E240BE806284B66BE4853 /* CalendarService.swift */,
+				AE7530FD9BC9DEF314B714CF /* KTXParser.swift */,
+				9304276FF7A58DE1BB96F6C5 /* OCRService.swift */,
+				3BDC51EAA7E4653CE0B29AC4 /* TicketStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F82B79F07ABBE835437D1D67 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6D26B36301D6C94F4CF6FFC8 /* KTXTicket.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		478F42A20AA81E4CC9364832 /* KTXCalendar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E5769B9A9D94DD58406602A9 /* Build configuration list for PBXNativeTarget "KTXCalendar" */;
+			buildPhases = (
+				45F957B8243BE5B05DDF4B95 /* Sources */,
+				C6CA21496D04025E3393E840 /* Resources */,
+				0CF99A0CA0414438D3AABF89 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9D746647078748E7E1665A0F /* PBXTargetDependency */,
+			);
+			name = KTXCalendar;
+			productName = KTXCalendar;
+			productReference = F7E9392CD7D91316BC7266E3 /* KTXCalendar.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B3919ADF603E3FCA167627FE /* KTXCalendarShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 28D78E3604744CF27F6FA59E /* Build configuration list for PBXNativeTarget "KTXCalendarShareExtension" */;
+			buildPhases = (
+				D6640CA3D86015A43552D57D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KTXCalendarShareExtension;
+			productName = KTXCalendarShareExtension;
+			productReference = 788564A34E0D89C23B5AB7AA /* KTXCalendarShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		01E012496EBBF22384970A35 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 123685AB11F619A31D5A267B /* Build configuration list for PBXProject "KTXCalendar" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = CF203EFCCF7DFEC3475D8E5E;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				478F42A20AA81E4CC9364832 /* KTXCalendar */,
+				B3919ADF603E3FCA167627FE /* KTXCalendarShareExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C6CA21496D04025E3393E840 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8063B4F32FFCF9AACDF8C7D3 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		45F957B8243BE5B05DDF4B95 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2910DAAC54A514A1CCF487E1 /* CalendarService.swift in Sources */,
+				6C6B6EA868B2235323CF3404 /* ContentView.swift in Sources */,
+				C09AA5BF0C41F2CC3FCEA1C4 /* KTXCalendarApp.swift in Sources */,
+				538759DEB5D61CBA04695AD6 /* KTXParser.swift in Sources */,
+				EACC37927C5764762626EB0A /* KTXTicket.swift in Sources */,
+				E3394616A0122F1CC0E308A2 /* OCRService.swift in Sources */,
+				F98FF4A9AF61F9C79E5EC32B /* TicketStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D6640CA3D86015A43552D57D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29CA87CB730265091A04CABA /* CalendarService.swift in Sources */,
+				A3EBE32C9EB326BEFBDD79E7 /* KTXParser.swift in Sources */,
+				010AA13C6660792EB4A2AA06 /* KTXTicket.swift in Sources */,
+				38E548CA994869672698960A /* OCRService.swift in Sources */,
+				CE1F2765484A01D4CEE7984A /* ShareTicketView.swift in Sources */,
+				24DBF7A55F2E21F73E0A824F /* ShareViewController.swift in Sources */,
+				939E232AA84DC1A29BCF8371 /* TicketStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9D746647078748E7E1665A0F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B3919ADF603E3FCA167627FE /* KTXCalendarShareExtension */;
+			targetProxy = 60CFFC1650E06B4E96953DA9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B58AD4E670F21B7D4F219563 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Resources/ShareExtension.entitlements;
+				DEVELOPMENT_TEAM = 522597L78G;
+				INFOPLIST_FILE = "Resources/ShareExtension-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yalkongs.KTXCalendar.ShareExtension;
+				PRODUCT_NAME = KTXCalendarShareExtension;
+			};
+			name = Debug;
+		};
+		C352B6CDC1A62CE45CC846D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Resources/KTXCalendar.entitlements;
+				INFOPLIST_FILE = Resources/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yalkongs.KTXCalendar;
+				PRODUCT_NAME = KTXCalendar;
+			};
+			name = Release;
+		};
+		C39FCB2F44EA549C23DF8C0F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Resources/KTXCalendar.entitlements;
+				DEVELOPMENT_TEAM = 522597L78G;
+				INFOPLIST_FILE = Resources/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yalkongs.KTXCalendar;
+				PRODUCT_NAME = KTXCalendar;
+			};
+			name = Debug;
+		};
+		CC46153E5BC788CD2D9BE854 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B22BP425H4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		CCB4DD896290C3F3C8DB9B53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Resources/ShareExtension.entitlements;
+				INFOPLIST_FILE = "Resources/ShareExtension-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yalkongs.KTXCalendar.ShareExtension;
+				PRODUCT_NAME = KTXCalendarShareExtension;
+			};
+			name = Release;
+		};
+		D76B980F7C13C4886E3DB2A5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B22BP425H4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		123685AB11F619A31D5A267B /* Build configuration list for PBXProject "KTXCalendar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC46153E5BC788CD2D9BE854 /* Debug */,
+				D76B980F7C13C4886E3DB2A5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		28D78E3604744CF27F6FA59E /* Build configuration list for PBXNativeTarget "KTXCalendarShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B58AD4E670F21B7D4F219563 /* Debug */,
+				CCB4DD896290C3F3C8DB9B53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E5769B9A9D94DD58406602A9 /* Build configuration list for PBXNativeTarget "KTXCalendar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C39FCB2F44EA549C23DF8C0F /* Debug */,
+				C352B6CDC1A62CE45CC846D3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 01E012496EBBF22384970A35 /* Project object */;
+}
