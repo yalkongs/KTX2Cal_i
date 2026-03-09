@@ -223,19 +223,18 @@ struct KTXEventRow: View {
     }()
     private static let dateFmt: DateFormatter = {
         let f = DateFormatter()
-        f.dateFormat = "M.d"
+        f.dateFormat = "M/d"
         f.locale = Locale(identifier: "ko_KR")
         return f
     }()
     private static let dayFmt: DateFormatter = {
         let f = DateFormatter()
-        f.dateFormat = "E"
+        f.dateFormat = "EEE"
         f.locale = Locale(identifier: "ko_KR")
         return f
     }()
 
-    /// 이벤트 제목에서 열차 정보 파싱 "KTX-산천 195 | 행신→동대구"
-    /// \r 등 제어문자 방어: 기존에 저장된 이벤트 제목에도 대응
+    /// 이벤트 제목에서 열차 정보 파싱, \r 제어문자 방어
     private var titleParts: (trainInfo: String, route: String) {
         let title = (event.title ?? "")
             .replacingOccurrences(of: "\r\n", with: "")
@@ -245,7 +244,7 @@ struct KTXEventRow: View {
         return (parts.first ?? title, parts.last ?? "")
     }
 
-    /// 경로 문자열에서 출발역/도착역 분리 "행신→동대구" → ("행신", "동대구")
+    /// 경로 문자열에서 출발역/도착역 분리
     private var routeParts: (dep: String, arr: String) {
         let parts = titleParts.route.components(separatedBy: "→")
         if parts.count == 2 {
@@ -255,100 +254,116 @@ struct KTXEventRow: View {
         return (titleParts.route, "")
     }
 
+    private var accent: Color { isPast ? Color(.systemGray3) : .blue }
+
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
 
             // ── 왼쪽 컬러 바 ─────────────────────────────
-            RoundedRectangle(cornerRadius: 2)
-                .fill(isPast ? Color(.systemGray4) : Color.blue)
-                .frame(width: 4)
-                .padding(.vertical, 2)
+            RoundedRectangle(cornerRadius: 1.5)
+                .fill(accent)
+                .frame(width: 3)
+                .padding(.vertical, 6)
 
-            // ── 날짜 뱃지 (고정 너비) ─────────────────────
-            VStack(spacing: 2) {
+            // ── 날짜 뱃지 ────────────────────────────────
+            VStack(spacing: 1) {
                 Text(Self.dateFmt.string(from: event.startDate))
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
                     .foregroundColor(isPast ? .secondary : .blue)
                 Text(Self.dayFmt.string(from: event.startDate))
                     .font(.system(size: 10, weight: .regular))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color(.tertiaryLabel))
+                    .padding(.bottom, 3)
                 Text(isPast ? "완료" : "예정")
-                    .font(.system(size: 9, weight: .semibold))
+                    .font(.system(size: 9, weight: .bold))
+                    .tracking(0.3)
                     .padding(.horizontal, 5).padding(.vertical, 2)
-                    .background(isPast ? Color(.systemGray5) : Color.blue.opacity(0.12))
+                    .background(isPast ? Color(.systemGray5) : accent.opacity(0.13))
                     .clipShape(Capsule())
-                    .foregroundColor(isPast ? .secondary : .blue)
+                    .foregroundColor(isPast ? Color(.systemGray2) : .blue)
             }
-            .frame(width: 46)
+            .frame(width: 44)
             .padding(.leading, 8)
 
             // ── 구분선 ────────────────────────────────────
             Rectangle()
-                .fill(Color(.separator).opacity(0.5))
-                .frame(width: 0.5, height: 50)
+                .fill(Color(.separator).opacity(0.4))
+                .frame(width: 0.5, height: 58)
                 .padding(.horizontal, 10)
 
-            // ── 메인 정보 ─────────────────────────────────
-            // 레이아웃 구조: 경로(좌) + 시간(우)가 1행, 편명이 2행
-            // → 편명이 아무리 길어도 시간 줄바꿈 절대 없음
-            VStack(alignment: .leading, spacing: 5) {
+            // ── 메인: 역명 + 연결선 + 시간 ────────────────
+            VStack(alignment: .leading, spacing: 0) {
 
-                // ① 1행: 출발역 → 도착역 (좌) | 시간 범위 (우, fixedSize)
-                HStack(alignment: .center, spacing: 0) {
-
-                    // 경로: 출발역 → 도착역
-                    HStack(spacing: 5) {
-                        Text(routeParts.dep)
-                            .font(.system(size: 15, weight: .bold))
-                            .foregroundColor(isPast ? .secondary : .primary)
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(.secondary)
-                        Text(routeParts.arr)
-                            .font(.system(size: 15, weight: .bold))
-                            .foregroundColor(isPast ? .secondary : .primary)
-                    }
-                    .lineLimit(1)
-
-                    Spacer(minLength: 8)
-
-                    // 시간: HH:mm → HH:mm  (.fixedSize로 절대 줄바꿈 방지)
-                    HStack(spacing: 3) {
-                        Text(Self.timeFmt.string(from: event.startDate))
-                            .font(.system(size: 14, weight: .semibold, design: .monospaced))
-                            .foregroundColor(isPast ? .secondary : .primary)
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 8, weight: .medium))
-                            .foregroundColor(Color(.tertiaryLabel))
-                        if let end = event.endDate {
-                            Text(Self.timeFmt.string(from: end))
-                                .font(.system(size: 14, weight: .semibold, design: .monospaced))
-                                .foregroundColor(isPast ? .secondary : .primary)
-                        }
-                    }
-                    .fixedSize()   // ← 핵심: 시간은 절대 축소·줄바꿈하지 않음
+                // ① 역명 행: 행신          동대구
+                HStack(alignment: .firstTextBaseline) {
+                    Text(routeParts.dep)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(isPast ? .secondary : .primary)
+                    Spacer()
+                    Text(routeParts.arr)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(isPast ? .secondary : .primary)
                 }
 
-                // ② 2행: 열차 편명 (보조 정보)
-                Text(titleParts.trainInfo)
-                    .font(.caption)
-                    .foregroundColor(Color(.tertiaryLabel))
-                    .lineLimit(1)
+                // ② 연결선 + 시간 행: 21:10 ●━━━━━━━━━● 23:21
+                HStack(spacing: 0) {
+                    // 출발 시간 (fixedSize로 절대 줄바꿈 없음)
+                    Text(Self.timeFmt.string(from: event.startDate))
+                        .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                        .foregroundColor(.secondary)
+                        .fixedSize()
+
+                    // 연결선: ●━━━━━━━━━━━━━━━●
+                    HStack(spacing: 0) {
+                        Circle()
+                            .fill(accent.opacity(0.45))
+                            .frame(width: 5, height: 5)
+                        Rectangle()
+                            .fill(accent.opacity(0.2))
+                            .frame(height: 1.5)
+                        Image(systemName: "arrowtriangle.right.fill")
+                            .font(.system(size: 5))
+                            .foregroundColor(accent.opacity(0.45))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 6)
+
+                    // 도착 시간
+                    if let end = event.endDate {
+                        Text(Self.timeFmt.string(from: end))
+                            .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                            .foregroundColor(.secondary)
+                            .fixedSize()
+                    }
+                }
+                .padding(.top, 5)
+
+                // ③ 편명 행 (보조, 작게)
+                HStack(spacing: 4) {
+                    Image(systemName: "tram.fill")
+                        .font(.system(size: 9))
+                        .foregroundColor(Color(.quaternaryLabel))
+                    Text(titleParts.trainInfo)
+                        .font(.system(size: 11))
+                        .foregroundColor(Color(.quaternaryLabel))
+                        .lineLimit(1)
+                }
+                .padding(.top, 5)
             }
+            .padding(.vertical, 10)
 
             // ── 삭제 버튼 ─────────────────────────────────
             Button(action: onCancel) {
                 Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(isPast ? Color(.systemGray4) : Color.red.opacity(0.6))
-                    .font(.title3)
+                    .font(.system(size: 19))
+                    .foregroundColor(isPast ? Color(.systemGray4) : Color.red.opacity(0.55))
             }
             .buttonStyle(.plain)
             .padding(.leading, 10)
-            .padding(.trailing, 2)
+            .padding(.trailing, 4)
         }
-        .padding(.vertical, 7)
-        .opacity(isPast ? 0.5 : 1.0)
-        .saturation(isPast ? 0.0 : 1.0)   // 과거 항목은 흑백
+        .opacity(isPast ? 0.48 : 1.0)
+        .saturation(isPast ? 0.0 : 1.0)
     }
 }
 
