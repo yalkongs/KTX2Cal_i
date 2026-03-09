@@ -14,6 +14,10 @@ private extension Color {
     static let ktxBg      = Color(red: 0.93, green: 0.94, blue: 0.98)
     /// 카드 우측 배경 (다크모드에서도 밝게 유지)
     static let ktxCardBg  = Color(red: 0.96, green: 0.97, blue: 1.00)
+    /// 카드 우측 역명용 — ktxCardBg 위에서 항상 선명하게
+    static let ktxCardText = Color(red: 0.05, green: 0.10, blue: 0.22)
+    /// 카드 보조 텍스트 (편명 등)
+    static let ktxCardSub  = Color(red: 0.38, green: 0.43, blue: 0.54)
 }
 
 // MARK: - ContentView
@@ -396,20 +400,6 @@ struct KTXEventRow: View {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.white.opacity(0.80))
 
-                Spacer().frame(height: 12)
-
-                // 예정 / 완료 뱃지
-                Text(isPast ? "완료" : "예정")
-                    .font(.system(size: 10, weight: .bold)).tracking(0.5)
-                    .padding(.horizontal, 8).padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(isPast
-                                  ? Color.white.opacity(0.18)
-                                  : Color.ktxOrange.opacity(0.88))
-                    )
-                    .foregroundColor(.white)
-
                 Spacer()
             }
             .frame(width: 66)
@@ -429,7 +419,7 @@ struct KTXEventRow: View {
                 HStack(alignment: .center) {
                     Text(routeParts.dep)
                         .font(.system(size: 23, weight: .bold))
-                        .foregroundColor(isPast ? .secondary : .primary)
+                        .foregroundColor(.ktxCardText)
                         .minimumScaleFactor(0.75)
                         .lineLimit(1)
 
@@ -444,7 +434,7 @@ struct KTXEventRow: View {
 
                     Text(routeParts.arr)
                         .font(.system(size: 23, weight: .bold))
-                        .foregroundColor(isPast ? .secondary : .primary)
+                        .foregroundColor(.ktxCardText)
                         .minimumScaleFactor(0.75)
                         .lineLimit(1)
                         .multilineTextAlignment(.trailing)
@@ -482,23 +472,36 @@ struct KTXEventRow: View {
                 .padding(.top, 10)
 
                 // ③ 편명 + 삭제 버튼
-                HStack(spacing: 4) {
+                HStack(spacing: 5) {
                     Image(systemName: "tram.fill")
                         .font(.system(size: 10))
-                        .foregroundColor(Color(.tertiaryLabel))
+                        .foregroundColor(.ktxCardSub)
                     Text(titleParts.trainInfo)
-                        .font(.system(size: 12))
-                        .foregroundColor(.secondary)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.ktxCardSub)
                         .lineLimit(1)
 
                     Spacer(minLength: 8)
 
+                    // 삭제 버튼 — 오렌지 틴트 캡슐
                     Button(action: onCancel) {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundColor(Color(.tertiaryLabel))
-                            .frame(width: 26, height: 26)
-                            .background(Circle().fill(Color(.systemGray5)))
+                        HStack(spacing: 3) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 9, weight: .heavy))
+                            Text("취소")
+                                .font(.system(size: 11, weight: .semibold))
+                        }
+                        .foregroundColor(.ktxOrange)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            Capsule()
+                                .fill(Color.ktxOrange.opacity(0.10))
+                                .overlay(
+                                    Capsule()
+                                        .stroke(Color.ktxOrange.opacity(0.30), lineWidth: 0.8)
+                                )
+                        )
                     }
                     .buttonStyle(.plain)
                 }
