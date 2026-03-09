@@ -1,15 +1,11 @@
 import SwiftUI
 import EventKit
 
-// MARK: - Color Palette
+// MARK: - Palette
 
 private extension Color {
-    /// 메인 KTX 블루 (선명한 코발트)
-    static let ktxBlue   = Color(red: 0.14, green: 0.42, blue: 0.96)
-    /// 보조 인디고
-    static let ktxIndigo = Color(red: 0.32, green: 0.22, blue: 0.90)
-    /// 앱 배경 (연한 청회색)
-    static let ktxBg     = Color(red: 0.93, green: 0.94, blue: 0.98)
+    static let ktxBlue = Color(red: 0.14, green: 0.42, blue: 0.96)
+    static let ktxBg   = Color(red: 0.93, green: 0.94, blue: 0.98)
 }
 
 // MARK: - ContentView
@@ -23,53 +19,27 @@ struct ContentView: View {
     @State private var showDeleteConfirm = false
     @State private var eventToDelete: EKEvent?
 
-    private static let sectionDateFmt: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy년 M월"
-        f.locale = Locale(identifier: "ko_KR")
-        return f
+    /// 그룹핑 키: "yyyy-MM" (10월·11월도 사전순 정렬 올바름)
+    private static let sectionKeyFmt: DateFormatter = {
+        let f = DateFormatter(); f.dateFormat = "yyyy-MM"; return f
     }()
 
     var body: some View {
         NavigationStack {
-            contentArea
-                // ── 헤더 고정 (inline = 스크롤해도 사라지지 않음) ──
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-                .toolbarBackground(.visible,           for: .navigationBar)
-                .toolbar {
-                    // 그라디언트 커스텀 타이틀
-                    ToolbarItem(placement: .principal) {
-                        HStack(spacing: 5) {
-                            Text("🚄")
-                                .font(.system(size: 16))
-                            Text("KTX 일정")
-                                .font(.system(size: 17, weight: .bold, design: .rounded))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [.ktxBlue, .ktxIndigo],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                        }
-                    }
-                    // 새로고침 버튼
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button { loadEvents() } label: {
-                            Image(systemName: "arrow.clockwise")
-                                .foregroundColor(.ktxBlue)
-                        }
-                    }
-                }
-                .background(Color.ktxBg.ignoresSafeArea())
-                .alert("일정 취소", isPresented: $showDeleteConfirm,
-                       presenting: eventToDelete,
-                       actions: deleteAlertActions,
-                       message: deleteAlertMessage)
-                .alert("삭제 오류", isPresented: showErrorBinding) {
-                    Button("확인") { deleteError = nil }
-                } message: { Text(deleteError ?? "") }
+            VStack(spacing: 0) {
+                appHeader
+                Divider().opacity(0.4)
+                contentArea
+            }
+            .background(Color.ktxBg.ignoresSafeArea())
+            .toolbar(.hidden, for: .navigationBar)
+            .alert("일정 취소", isPresented: $showDeleteConfirm,
+                   presenting: eventToDelete,
+                   actions: deleteAlertActions,
+                   message: deleteAlertMessage)
+            .alert("삭제 오류", isPresented: showErrorBinding) {
+                Button("확인") { deleteError = nil }
+            } message: { Text(deleteError ?? "") }
         }
         .task {
             await calendarService.requestAccess()
@@ -79,6 +49,50 @@ struct ContentView: View {
             for: UIApplication.willEnterForegroundNotification)
         ) { _ in loadEvents() }
     }
+
+    // MARK: - 앱 헤더 (완전 고정)
+
+    private var appHeader: some View {
+        HStack(spacing: 12) {
+            // 앱 아이콘 배지
+            Image(systemName: "tram.fill")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundColor(.white)
+                .frame(width: 32, height: 32)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Color.ktxBlue)
+                )
+
+            // 타이틀 + 건수
+            VStack(alignment: .leading, spacing: 1) {
+                Text("KTX 일정")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.primary)
+                if !ktxEvents.isEmpty {
+                    Text("승차권 \(ktxEvents.count)건")
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Spacer()
+
+            // 새로고침
+            Button { loadEvents() } label: {
+                Image(systemName: "arrow.clockwise")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.ktxBlue)
+                    .frame(width: 34, height: 34)
+                    .background(Circle().fill(Color(.secondarySystemGroupedBackground)))
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 13)
+        .background(Color(.systemBackground))
+    }
+
+    // MARK: - 콘텐츠 라우팅
 
     private var showErrorBinding: Binding<Bool> {
         Binding(get: { deleteError != nil }, set: { if !$0 { deleteError = nil } })
@@ -110,7 +124,7 @@ struct ContentView: View {
         Text("\"\(event.title ?? "")\" 일정을 캘린더에서 삭제합니다.")
     }
 
-    // MARK: - 카드 리스트
+    // MARK: - 티켓 리스트
 
     private var firstUpcomingEventID: String? {
         ktxEvents
@@ -122,8 +136,8 @@ struct ContentView: View {
     private var ticketList: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                LazyVStack(spacing: 12, pinnedViews: [.sectionHeaders]) {
-                    ForEach(groupedByMonth, id: \.0) { (month, events) in
+                LazyVStack(spacing: 10, pinnedViews: [.sectionHeaders]) {
+                    ForEach(groupedByMonth, id: \.0) { (key, events) in
                         Section {
                             ForEach(events, id: \.eventIdentifier) { event in
                                 KTXEventRow(event: event) {
@@ -131,49 +145,54 @@ struct ContentView: View {
                                     showDeleteConfirm = true
                                 }
                                 .id(event.eventIdentifier)
-                                // ── 독립 카드 스타일 ────────────────────────
                                 .background(
-                                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
                                         .fill(Color(.systemBackground))
                                         .shadow(
                                             color: (event.startDate < Date()
                                                 ? Color.gray : Color.ktxBlue)
-                                                .opacity(event.startDate < Date() ? 0.06 : 0.15),
-                                            radius: 10, x: 0, y: 4
+                                                .opacity(event.startDate < Date() ? 0.05 : 0.13),
+                                            radius: 9, x: 0, y: 3
                                         )
                                 )
-                                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                                 .padding(.horizontal, 16)
                             }
                         } header: {
-                            // ── 월 섹션 헤더 (스크롤 시 상단 고정) ─────────
-                            HStack {
-                                Text(month)
-                                    .font(.system(size: 13, weight: .heavy))
-                                    .foregroundStyle(
-                                        LinearGradient(
-                                            colors: [.ktxBlue, .ktxIndigo],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .kerning(0.3)
-                                Spacer()
-                            }
-                            .padding(.horizontal, 22)
-                            .padding(.vertical, 8)
-                            .background(Color.ktxBg)
+                            monthSectionHeader(key: key)
                         }
                     }
                 }
-                .padding(.vertical, 8)
-                .padding(.bottom, 16)
+                .padding(.vertical, 6)
+                .padding(.bottom, 20)
             }
             .refreshable { loadEvents() }
             .onChange(of: ktxEvents) {
                 scrollToFirstUpcoming(proxy: proxy)
             }
         }
+    }
+
+    /// "yyyy-MM" 키를 받아 "3월  2026" 형태로 표시
+    @ViewBuilder
+    private func monthSectionHeader(key: String) -> some View {
+        let parts = key.split(separator: "-")
+        let year     = parts.first.map(String.init) ?? ""
+        let monthNum = parts.last.flatMap { Int($0) } ?? 0
+
+        HStack(alignment: .lastTextBaseline, spacing: 6) {
+            Text("\(monthNum)월")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundColor(.primary.opacity(0.78))
+            Text(year)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(.secondary)
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 14)
+        .padding(.bottom, 6)
+        .background(Color.ktxBg)
     }
 
     private func scrollToFirstUpcoming(proxy: ScrollViewProxy) {
@@ -186,15 +205,15 @@ struct ContentView: View {
     private var groupedByMonth: [(String, [EKEvent])] {
         var dict: [String: [EKEvent]] = [:]
         for event in ktxEvents {
-            let key = Self.sectionDateFmt.string(from: event.startDate)
+            let key = Self.sectionKeyFmt.string(from: event.startDate)
             dict[key, default: []].append(event)
         }
         return dict
             .map { ($0.key, $0.value.sorted { $0.startDate < $1.startDate }) }
-            .sorted { $0.0 < $1.0 }
+            .sorted { $0.0 < $1.0 }   // "2026-03" < "2026-10" ← 올바른 정렬
     }
 
-    // MARK: - 이벤트 로드 / 삭제
+    // MARK: - 이벤트 CRUD
 
     private func loadEvents() {
         isLoading = true
@@ -273,7 +292,7 @@ struct ContentView: View {
     }
 }
 
-// MARK: - KTX 이벤트 카드 행
+// MARK: - KTX 이벤트 카드
 
 struct KTXEventRow: View {
     let event: EKEvent
@@ -286,33 +305,26 @@ struct KTXEventRow: View {
     }()
     private static let dateFmt: DateFormatter = {
         let f = DateFormatter()
-        f.dateFormat = "M/d"
-        f.locale = Locale(identifier: "ko_KR")
-        return f
-    }()
-    private static let dayFmt: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "EEE"
+        f.dateFormat = "M/d (EEE)"
         f.locale = Locale(identifier: "ko_KR")
         return f
     }()
 
-    /// 이벤트 제목 파싱, \r 방어
+    /// \r 방어 + 제목 파싱
     private var titleParts: (trainInfo: String, route: String) {
-        let title = (event.title ?? "")
+        let t = (event.title ?? "")
             .replacingOccurrences(of: "\r\n", with: "")
             .replacingOccurrences(of: "\r",   with: "")
             .replacingOccurrences(of: "\n",   with: "")
-        let parts = title.components(separatedBy: " | ")
-        return (parts.first ?? title, parts.last ?? "")
+        let p = t.components(separatedBy: " | ")
+        return (p.first ?? t, p.last ?? "")
     }
 
-    /// 출발역 / 도착역 분리
     private var routeParts: (dep: String, arr: String) {
-        let parts = titleParts.route.components(separatedBy: "→")
-        guard parts.count == 2 else { return (titleParts.route, "") }
-        return (parts[0].trimmingCharacters(in: .whitespaces),
-                parts[1].trimmingCharacters(in: .whitespaces))
+        let p = titleParts.route.components(separatedBy: "→")
+        guard p.count == 2 else { return (titleParts.route, "") }
+        return (p[0].trimmingCharacters(in: .whitespaces),
+                p[1].trimmingCharacters(in: .whitespaces))
     }
 
     private var accent: Color { isPast ? Color(.systemGray3) : .ktxBlue }
@@ -323,7 +335,7 @@ struct KTXEventRow: View {
         if isPast { return Color(.systemGray4) }
         let h = event.startDate.timeIntervalSinceNow / 3600
         if h <= 8  { return .red    }
-        if h <= 24 { return .yellow }
+        if h <= 24 { return .orange }   // 주황 (노랑보다 흰 배경에서 가독성 ↑)
         return .green
     }
 
@@ -335,133 +347,133 @@ struct KTXEventRow: View {
 
     @State private var lampOpacity: Double = 1.0
 
+    // MARK: Body
+
     var body: some View {
-        HStack(alignment: .center, spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
 
-            // ── 상태 램프 (halo + core) ───────────────────────
-            ZStack {
-                // 외부 후광 (halo)
-                Circle()
-                    .fill(lampColor.opacity(isPast ? 0.0 : 0.18))
-                    .frame(width: 24, height: 24)
-                // 내부 발광점
-                Circle()
-                    .fill(lampColor)
-                    .frame(width: 12, height: 12)
-                    .opacity(lampOpacity)
-                    .shadow(color: lampColor.opacity(isPast ? 0 : 0.9), radius: 5)
-            }
-            .padding(.leading, 14)
-            .onAppear {
-                guard shouldBlink else { return }
-                withAnimation(.easeInOut(duration: 0.75).repeatForever(autoreverses: true)) {
-                    lampOpacity = 0.15
-                }
-            }
+            // ── ① 역명 ─────────────────────────────────────
+            HStack(alignment: .center) {
+                Text(routeParts.dep)
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundColor(isPast ? .secondary : .primary)
+                    .minimumScaleFactor(0.75)
+                    .lineLimit(1)
 
-            // ── 날짜 뱃지 ─────────────────────────────────────
-            VStack(spacing: 2) {
-                Text(Self.dateFmt.string(from: event.startDate))
-                    .font(.system(size: 17, weight: .heavy, design: .rounded))
+                Spacer()
+
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(accent.opacity(0.45))
+                    .padding(.horizontal, 6)
+
+                Spacer()
+
+                Text(routeParts.arr)
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundColor(isPast ? .secondary : .primary)
+                    .minimumScaleFactor(0.75)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.trailing)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+
+            // ── ② 시간 + 연결선 ────────────────────────────
+            HStack(spacing: 0) {
+                Text(Self.timeFmt.string(from: event.startDate))
+                    .font(.system(size: 18, weight: .semibold, design: .monospaced))
                     .foregroundColor(isPast ? .secondary : .ktxBlue)
-                Text(Self.dayFmt.string(from: event.startDate))
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(Color(.tertiaryLabel))
-                    .padding(.bottom, 2)
-                Text(isPast ? "완료" : "예정")
-                    .font(.system(size: 10, weight: .bold)).tracking(0.5)
-                    .padding(.horizontal, 6).padding(.vertical, 2.5)
-                    .background(isPast ? Color(.systemGray5) : Color.ktxBlue.opacity(0.12))
-                    .clipShape(Capsule())
-                    .foregroundColor(isPast ? Color(.systemGray2) : .ktxBlue)
-            }
-            .frame(width: 50)
-            .padding(.leading, 10)
+                    .fixedSize()
 
-            // ── 점선 구분 (티켓 재단선 느낌) ─────────────────
-            VStack(spacing: 4) {
-                ForEach(0..<7, id: \.self) { _ in
-                    Circle()
-                        .fill(Color(.separator))
-                        .frame(width: 2, height: 2)
-                }
-            }
-            .padding(.horizontal, 12)
+                // 그라디언트 라인 (fade-in / fade-out)
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [accent.opacity(0), accent.opacity(0.30), accent.opacity(0)],
+                            startPoint: .leading, endPoint: .trailing
+                        )
+                    )
+                    .frame(height: 1.5)
+                    .padding(.horizontal, 10)
 
-            // ── 메인 콘텐츠 ───────────────────────────────────
-            VStack(alignment: .leading, spacing: 6) {
-
-                // ① 역명 (크고 굵게)
-                HStack(alignment: .firstTextBaseline) {
-                    Text(routeParts.dep)
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(isPast ? .secondary : .primary)
-                    Spacer()
-                    Text(routeParts.arr)
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(isPast ? .secondary : .primary)
-                }
-
-                // ② 연결선 + 시간 (그라디언트 라인)
-                HStack(spacing: 0) {
-                    Text(Self.timeFmt.string(from: event.startDate))
-                        .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                if let end = event.endDate {
+                    Text(Self.timeFmt.string(from: end))
+                        .font(.system(size: 18, weight: .semibold, design: .monospaced))
                         .foregroundColor(isPast ? .secondary : .ktxBlue)
                         .fixedSize()
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 10)
 
-                    HStack(spacing: 0) {
-                        Circle()
-                            .fill(accent.opacity(0.55))
-                            .frame(width: 6, height: 6)
-                        Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [accent.opacity(0.45), accent.opacity(0.12)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .frame(height: 2)
-                        Image(systemName: "arrowtriangle.right.fill")
-                            .font(.system(size: 6))
-                            .foregroundColor(accent.opacity(0.6))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 8)
-
-                    if let end = event.endDate {
-                        Text(Self.timeFmt.string(from: end))
-                            .font(.system(size: 14, weight: .semibold, design: .monospaced))
-                            .foregroundColor(isPast ? .secondary : .ktxBlue)
-                            .fixedSize()
+            // ── ③ 하단 메타 바 ────────────────────────────
+            HStack(spacing: 0) {
+                // 상태 램프
+                ZStack {
+                    Circle()
+                        .fill(lampColor.opacity(isPast ? 0 : 0.18))
+                        .frame(width: 18, height: 18)
+                    Circle()
+                        .fill(lampColor)
+                        .frame(width: 9, height: 9)
+                        .opacity(lampOpacity)
+                        .shadow(color: lampColor.opacity(isPast ? 0 : 0.8), radius: 3)
+                }
+                .padding(.trailing, 5)
+                .onAppear {
+                    guard shouldBlink else { return }
+                    withAnimation(.easeInOut(duration: 0.75).repeatForever(autoreverses: true)) {
+                        lampOpacity = 0.15
                     }
                 }
 
-                // ③ 편명 (보조, 작게)
-                HStack(spacing: 4) {
-                    Image(systemName: "tram.fill")
-                        .font(.system(size: 10))
-                        .foregroundColor(Color(.tertiaryLabel))
-                    Text(titleParts.trainInfo)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color(.tertiaryLabel))
-                        .lineLimit(1)
-                }
-            }
-            .padding(.vertical, 14)
+                Text(isPast ? "완료" : "예정")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(isPast ? .secondary : .ktxBlue)
 
-            // ── 삭제 버튼 ─────────────────────────────────────
-            Button(action: onCancel) {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 20))
-                    .foregroundColor(isPast ? Color(.systemGray4) : Color.red.opacity(0.60))
+                metaDot
+
+                Image(systemName: "tram.fill")
+                    .font(.system(size: 10))
+                    .foregroundColor(Color(.tertiaryLabel))
+                    .padding(.trailing, 3)
+                Text(titleParts.trainInfo)
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+
+                metaDot
+
+                Text(Self.dateFmt.string(from: event.startDate))
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+
+                Spacer(minLength: 8)
+
+                // 삭제 버튼
+                Button(action: onCancel) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Color(.tertiaryLabel))
+                        .frame(width: 26, height: 26)
+                        .background(Circle().fill(Color(.systemGray5)))
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
-            .padding(.leading, 8)
-            .padding(.trailing, 14)
+            .padding(.horizontal, 16)
+            .padding(.top, 10)
+            .padding(.bottom, 14)
         }
-        .opacity(isPast ? 0.50 : 1.0)
+        .opacity(isPast ? 0.52 : 1.0)
         .saturation(isPast ? 0.0 : 1.0)
+    }
+
+    private var metaDot: some View {
+        Circle()
+            .fill(Color(.systemGray4))
+            .frame(width: 3, height: 3)
+            .padding(.horizontal, 6)
     }
 }
 
