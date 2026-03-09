@@ -196,3 +196,7 @@ in the Software without restriction...
 
 Issues와 Pull Requests 환영합니다.  
 버그 신고나 기능 제안은 [GitHub Issues](https://github.com/yalkongs/KTX2Cal_i/issues)를 이용해 주세요.
+
+## 화면 샘플
+
+<img src="docs/screenshot.jpg" width="320" alt="KTX2Cal 앱 화면">
