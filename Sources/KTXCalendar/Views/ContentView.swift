@@ -256,14 +256,49 @@ struct KTXEventRow: View {
 
     private var accent: Color { isPast ? Color(.systemGray3) : .blue }
 
+    // MARK: - 상태 램프
+
+    /// 남은 시간에 따른 램프 색상
+    private var lampColor: Color {
+        if isPast { return Color(.systemGray4) }
+        let hours = event.startDate.timeIntervalSinceNow / 3600
+        if hours <= 8  { return .red }
+        if hours <= 24 { return .yellow }
+        return .green
+    }
+
+    /// 노란(1일 이하 ~ 8시간 초과) 구간만 점멸
+    private var shouldBlink: Bool {
+        guard !isPast else { return false }
+        let hours = event.startDate.timeIntervalSinceNow / 3600
+        return hours > 8 && hours <= 24
+    }
+
+    @State private var lampOpacity: Double = 1.0
+
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
+
+            // ── 상태 램프 ────────────────────────────────
+            Circle()
+                .fill(lampColor)
+                .frame(width: 9, height: 9)
+                .opacity(lampOpacity)
+                .shadow(color: lampColor.opacity(isPast ? 0 : 0.6), radius: 3, x: 0, y: 0)
+                .padding(.leading, 10)
+                .onAppear {
+                    guard shouldBlink else { return }
+                    withAnimation(
+                        .easeInOut(duration: 0.75).repeatForever(autoreverses: true)
+                    ) { lampOpacity = 0.15 }
+                }
 
             // ── 왼쪽 컬러 바 ─────────────────────────────
             RoundedRectangle(cornerRadius: 1.5)
                 .fill(accent)
                 .frame(width: 3)
                 .padding(.vertical, 6)
+                .padding(.leading, 6)
 
             // ── 날짜 뱃지 ────────────────────────────────
             VStack(spacing: 1) {
